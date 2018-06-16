@@ -2,11 +2,9 @@
 
 1、目的：
 
-将本地磁盘存储的日志文件同步（全量同步、实时增量同步）到ES中。 
+将本地磁盘存储的日志文件同步（全量同步、实时增量同步）到ES中。
 
 这里写图片描述
-
-
 
 2、源文件：
 
@@ -17,14 +15,6 @@
 -rw-r--r-- 1 root root 66 Jul 5 08:25 MProbe01.log
 
 -rw-r--r-- 1 root root 74 Jul 5 08:28 MProbe02.log
-
-1
-
-2
-
-3
-
-4
 
 3、增量实时同步脚本：
 
@@ -38,31 +28,13 @@ while \(true\)
 
 do
 
-  echo "\[debug\]\[20160703-15:00\]"$icnt &gt;&gt; MProbe01.log
+echo "\[debug\]\[20160703-15:00\]"$icnt &gt;&gt; MProbe01.log
 
-  echo "\[ERROR\]\[20160704-17:00\]"$icnt &gt;&gt; MProbe02.log
+echo "\[ERROR\]\[20160704-17:00\]"$icnt &gt;&gt; MProbe02.log
 
-  icnt=$\(\(icnt+1\)\);
+icnt=$\(\(icnt+1\)\);
 
 done
-
-1
-
-2
-
-3
-
-4
-
-5
-
-6
-
-7
-
-8
-
-9
 
 4、logstash配置文件：
 
@@ -70,29 +42,27 @@ done
 
 input {
 
-  file {
+file {
 
-  path=&gt; \[ "/usr/local/logstash/bin/test\_log/MProbe01.log",
+path=&gt; \[ "/usr/local/logstash/bin/test\_log/MProbe01.log",
 
 "/usr/local/logstash/bin/test\_log/MProbe02.log" \]
 
-  \#codec=&gt;multiline {
+\#codec=&gt;multiline {
 
-  \# pattern =&gt; "^\s"
+\# pattern =&gt; "^\s"
 
-  \# what=&gt;"previous"
+\# what=&gt;"previous"
 
-  \#}
+\#}
 
-  type=&gt;"probe\_log"  \#类型名称
+type=&gt;"probe\_log"  \#类型名称
 
-  \# tags=&gt;\["XX.XX.XX.XX"\]
-
-  }
+\# tags=&gt;\["XX.XX.XX.XX"\]
 
 }
 
-
+}
 
 \#\#\#过滤
 
@@ -106,8 +76,6 @@ input {
 
 \# }
 
-
-
 \# grok {
 
 \# match =&gt; \[ "message", "smsmonitor" \]
@@ -120,107 +88,27 @@ input {
 
 \#}
 
-
-
 \#\#\#output to es
 
 output {
 
-  elasticsearch {
+elasticsearch {
 
-  hosts =&gt; "10.8.5.101:9200"
+hosts =&gt; "10.8.5.101:9200"
 
-  index =&gt; "mprobe\_index"     \#索引名称
+index =&gt; "mprobe\_index"     \#索引名称
 
-  \#template\_name =&gt; "mprobelog"
+\#template\_name =&gt; "mprobelog"
 
-  \#document\_id =&gt; "%{id}"
-
-  }
-
-  stdout { codec =&gt; json\_lines }
+\#document\_id =&gt; "%{id}"
 
 }
 
-1
+stdout { codec =&gt; json\_lines }
 
-2
-
-3
-
-4
-
-5
-
-6
-
-7
-
-8
-
-9
-
-10
-
-11
-
-12
-
-13
-
-14
-
-15
-
-16
-
-17
-
-18
-
-19
-
-20
-
-21
-
-22
-
-23
-
-24
-
-25
-
-26
-
-27
-
-28
-
-29
-
-30
-
-31
-
-32
-
-33
-
-34
-
-35
-
-36
-
-37
-
-38
+}
 
 5、同步测试：
-
-
 
 \[root@5b9dbaaa148a bin\]\# ./logstash -f ./logstash\_jdbc\_test/log\_test.conf
 
@@ -230,19 +118,9 @@ Pipeline main started
 
 {"message":"\[DEbug\]\[20160305-15:35\]testing02","@version":"1","@timestamp":"2016-07-05T07:26:08.043Z","path":"/usr/local/logstash/bin/test\_log/MProbe01.log","host":"5b9dbaaa148a"
 
-1
-
-2
-
-3
-
-4
-
-6、结果验证 
+6、结果验证
 
 （1）日志记录：
-
-
 
 \[root@5b9dbaaa148a test\_log\]\# tail -f MProbe01.log
 
@@ -257,14 +135,4 @@ Pipeline main started
 \[DEbug\]\[20160305-15:35\]testing02\_001
 
 \[DEbug\]\[20160305-15:35\]testing02\_003
-
-
-
-（2）ES记录 
-
-这里写图片描述
-
-
-
-
 
